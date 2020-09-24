@@ -1,0 +1,14 @@
+{
+  "name": "top-news",
+  "version": "0.1.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-linux": "electron-packager ./ --out ./ers-app --platform=linux --arch=x64 --overwrite",
+    "build-window": "electron-packager ./ --out ./ers-app --platform=win32 --arch=x64 --overwrite"
+  },
+  "devDependencies": {
+    "electron": "^10.1.2",
+    "electron-packager": "^15.1.0"
+  }
+}
