@@ -5,15 +5,15 @@
         <Icon type="ios-film-outline" class="baidu"></Icon>
          百度新闻榜
       </p>
-      <a href="#" slot="extra" @click.prevent="change">
+      <a href="#" slot="extra">
         <Icon type="ios-loop-strong"></Icon>
-        换一换
+        每隔10s更新
       </a>
       <ul style="position: relative">
         <Spin size="large" fix v-if="spinShow"></Spin>
         <li v-for="item in List">
           <i-button type="success" shape="circle" size="small" class="num">{{ item.id }}</i-button>
-          <a :href="item.href" target="_blank">{{ item.name }}</a>
+          <a :href="item.href" @click.prevent="add(item.href)">{{ item.name }}</a>
         </li>
       </ul>
     </Card>
@@ -21,6 +21,9 @@
 </template>
 
 <script>
+if (window.require) {
+  const ipcRenderer = window.require('electron').ipcRenderer
+}
 export default {
   name: 'News',
   data () {
@@ -34,7 +37,10 @@ export default {
   methods: {
     do () {
       this.spinShow = true
-      this.$http.get("http://localhost:8081/news?num=" + this.num).then(res => {
+      this.$http.get(
+              "http://localhost:8081/news?num=" + this.num,
+              {timeout: 5000}
+      ).then(res => {
         if (res.data.flag) {
           this.num++
         } else {
@@ -42,16 +48,22 @@ export default {
         }
         this.spinShow = false
         this.List = JSON.parse(res.data.data)
+      }).catch(reason => {
+        console.log('reason '+ reason);
       })
     },
-    change() {
-      clearInterval(this.timer);
-      this.do()
+    add(url) {
+      // console.log(url)
+      if (window.require) {
+        ipcRenderer.send('open-window', url)
+      } else {
+        console.log(window.require)
+      }
+
     }
   },
   mounted() {
-    this.do()
-    this.timer = setInterval(this.do, 15000);
+    this.timer = setInterval(this.do, 10000);
   },
   beforeDestroy() {
     clearInterval(this.timer);
