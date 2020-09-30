@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>百度热搜榜</title>
+    <style type="text/css">
+        #app {
+            margin: 5px;
+        }
+        span {
+            margin-right: 10px;
+        }
+    </style>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <!--<script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;};</script>-->
+
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+</head>
+<body>
+<div id="app">
+    <div v-show="show" class="alert alert-success">{{ msg }}</div>
+    <ul class="list-group" v-show="!show">
+        <a class="list-group-item list-group-item-info" v-for="item in List" :href="item.href" @click.prevent="add(item.href)">
+            <span class="badge pull-left">{{ item.id }}</span> {{ item.name }}
+        </a>
+    </ul>
+</div>
+
+<script>
+    const {ipcRenderer} = require('electron')
+    new Vue({
+        el: '#app',
+        data: {
+            timer: '',
+            num: 1,
+            show: true,
+            msg: '正在加载中',
+            List: []
+        },
+        methods: {
+            do() {
+                axios.get(
+                    "http://localhost:8081/news?num=" + this.num,
+                    {timeout: 5000}
+                ).then(res => {
+                    if (res.data.flag) {
+                        this.num++
+                    } else {
+                        this.num = 1
+                    }
+                    this.List = JSON.parse(res.data.data)
+                    this.msg = '正在加载中'
+                    this.show = false
+                }).catch(reason => {
+                    console.log('reason ' + reason);
+                    this.show = true
+                    this.msg = reason
+                })
+            },
+            add(url) {
+                ipcRenderer.send('open-window', url)
+            }
+        },
+        mounted() {
+            this.timer = setInterval(this.do, 5000);
+
+        },
+        beforeDestroy() {
+            clearInterval(this.timer);
+        }
+    })
+</script>
+<script src="./renderer.js"></script>
+</body>
+</html>
