@@ -16,6 +16,7 @@ function createWindow() {
         // width: 300,
         // height: 330,
         // useContentSize: true,
+        icon:'./icon.ico',
         webPreferences: {
             nodeIntegration:true,
             preload: path.join(__dirname, 'preload.js'),
