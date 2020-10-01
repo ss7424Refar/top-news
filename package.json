@@ -4,9 +4,9 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build-linux-n": "electron-packager ./ --out ./c --platform=linux --arch=x64 --overwrite --icon=icon.ico",
-    "build-linux": "electron-packager ./ --out ./c --platform=linux --arch=x64 --overwrite --asar --icon=icon.ico",
-    "build-window": "electron-packager ./ --out ./c --platform=win32 --arch=x64 --overwrite --asar"
+    "build-linux-u": "electron-packager ./ --out ./c --platform=linux --arch=x64 --overwrite --icon=icon.ico --asar.unpackDir=node_modules",
+    "build-linux": "electron-packager ./ --out ./c --platform=linux --arch=x64 --overwrite --icon=icon.ico",
+    "build-window": "electron-packager ./ --out ./c --platform=win32 --arch=x64 --overwrite --icon=icon.ico"
   },
   "dependencies": {
     "puppeteer": "^5.3.1",
